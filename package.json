@@ -14,7 +14,7 @@
     "svg-sprite-loader"
   ],
   "dependencies": {
-    "svg-sprite-loader": "^4.2.1"
+    "svg-sprite-loader": "drop-webpack-version-detector"
   },
   "peerDependencies": {
     "gatsby": "2.x"
