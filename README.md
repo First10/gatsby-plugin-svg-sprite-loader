@@ -1,8 +1,7 @@
 # gatsby-plugin-svg-sprite-loader
 
-Gatsby plugin for creating SVG sprites using [External SVG Sprite][1].
-
-[1]: https://github.com/bensampaio/external-svg-sprite-loader
+Gatsby plugin for creating SVG sprites using
+[SVG sprite loader](https://github.com/JetBrains/svg-sprite-loader).
 
 ## Install
 
@@ -20,9 +19,9 @@ module.exports = {
     {
       resolve: `gatsby-plugin-svg-sprite-loader`,
       options: {
-        /* External SVG Sprite loader options */
+        /* SVG sprite loader options */
         pluginOptions: {
-          /* External SVG Sprite plugin options */
+          /* SVG sprite loader plugin options */
         }
       },
     },
@@ -34,48 +33,60 @@ module.exports = {
 
 ### options
 
-Default:
-`{ name: 'sprites.[contenthash].svg', iconName: '[name]--[hash:base64:5]' }`;
-Type: `Object`.
+Default: `{ extract: true, spriteFilename: 'sprites.[contenthash].svg', symbolId: '[name]--[hash:base64:5]' }`. Type: `Object`.
 
-The `options` object is passed directly to __External SVG Sprite__ loader, more
-info can be found [here][2]. To keep consistency, `name` and `iconName` default
-values use the same formats used by Gatsby.js for CSS files.
-
-[2]: https://github.com/bensampaio/external-svg-sprite-loader#options
+The `options` object is passed directly to __SVG sprite loader__, more info can
+be found [here](https://github.com/JetBrains/svg-sprite-loader#configuration).
+To maintain consistency, `spriteFilename` and `symbolId` formatting are to the
+same formats used by Gatsby.js for CSS files.
 
 ### pluginOptions
 
-Default: `{}`; Type: `Object`.
+Default: `{}`. Type: `Object`.
 
-The `pluginOptions` parameter is passed to __External SVG Sprite__ plugin.
+The `pluginOptions` parameter is passed to `svg-sprite-loader/plugin` — if
+`extract` is set to `true` in the `options` parameter. If the sprites are used
+only inside `<use xlinkHref='...'/>` — and never referenced in CSS files or as
+`src` attribute of `<img>` elements — set `plainSprite` option to `true` to
+allow __SVG sprite loader__ to generate a smaller output.
 
 ## Usage
 
+If `extract` mode is enabled (set to `true` by default), use `sprite.url` in
+`xlinkHref` prop. Otherwise, use `sprite.id`.
+
 ```javascript
+/* extract === true (default) */
 import React from 'react'
-import icon from 'images/icon.svg'
+import sprite from 'images/sprite.svg'
 
 export default () => (
-  <svg viewBox={icon.viewBox}>
-    <use xlinkHref={icon.url}/>
+  <svg viewBox={sprite.viewBox}>
+    <use xlinkHref={sprite.url}/>
   </svg>
 )
 ```
 
-```css
-.icon {
-  background-image: url('images/icon.svg') no-repeat 0;
-}
+```javascript
+/* extract === false */
+import React from 'react'
+import sprite from 'images/sprite.svg'
+
+export default () => (
+  <svg viewBox={sprite.viewBox}>
+    <use xlinkHref={sprite.id}/>
+  </svg>
+)
 ```
 
-## Updating from v0.1.* to v0.2.*
+## Known bugs
 
-While v0.1.* uses __SVG sprite loader__ under the hood, v0.2.* uses
-__External SVG Sprite__. The new package returns the sprite url using the
-`symbol` property, while __SVG sprite loader__ uses `url`. A patch was created
-to return the value inside the `url` property, among with `symbol`. If the
-default options were being used in v0.1.*, no difference should be noticed.
+There's an open bug on __SVG sprite loader__ that wasn't fixed yet (more info on
+[#334](https://github.com/JetBrains/svg-sprite-loader/issues/334),
+[#337](https://github.com/JetBrains/svg-sprite-loader/issues/337) and
+[#363](https://github.com/JetBrains/svg-sprite-loader/issues/363)
+), which generates invalid ESM code in some specific situations. If you're
+having some troubles, try setting the option `esModule` to `false`.
 
 ## License
 
